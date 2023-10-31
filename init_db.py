@@ -12,6 +12,3 @@ Base.metadata.create_all(bind=engine)
 # Commit the transaction
 session = SessionLocal()
 session.commit()
-
-
-
