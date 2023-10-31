@@ -52,8 +52,6 @@ async def list_all_orders(Authorize: AuthJWT = Depends()):
     """
         ## List all orders
         This lists all  orders made. It can be accessed by superusers
-
-
     """
 
     try:
@@ -82,8 +80,6 @@ async def get_order_by_id(id: int, Authorize: AuthJWT = Depends()):
     """
         ## Get an order by its ID
         This gets an order by its ID and is only accessed by a superuser
-
-
     """
 
     try:
