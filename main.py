@@ -1,7 +1,9 @@
 import inspect, re
+import stripe
 from fastapi import FastAPI
 from fastapi.routing import APIRoute
 from auth_routes import auth_router
+from payment_routes import pay_router
 from orders_routers import orders_router
 from fastapi_jwt_auth.auth_jwt import AuthJWT
 from schemas import Settings
@@ -16,10 +18,10 @@ def custom_openapi():
         return app.openapi_schema
 
     openapi_schema = get_openapi(
-        title = "Pizza Delivery API",
-        version = "1.0",
-        description = "An API for a Pizza Delivery Service",
-        routes = app.routes,
+        title="Pizza Delivery API",
+        version="1.1",
+        description="An API for a Pizza Delivery Service with payment integration",
+        routes=app.routes,
     )
 
     openapi_schema["components"]["securitySchemes"] = {
@@ -58,6 +60,7 @@ def custom_openapi():
 
 app.openapi = custom_openapi
 
+
 @AuthJWT.load_config
 def get_config():
     return Settings()
@@ -65,13 +68,4 @@ def get_config():
 
 app.include_router(auth_router)
 app.include_router(orders_router)
-
-
-# @app.get("/")
-# async def root():
-#     return {"message": "Hello World"}
-#
-#
-# @app.get("/hello/{name}")
-# async def say_hello(name: str):
-#     return {"message": f"Hello {name}"}
+app.include_router(pay_router)

@@ -1,8 +1,7 @@
-from sqlalchemy.ext.declarative import declarative_base
-
+from enum import Enum as PyEnum
 from sqlalchemy_utils import ChoiceType
 from sqlalchemy.orm import relationship
-from sqlalchemy import Column, Integer, Boolean, Text, String, ForeignKey
+from sqlalchemy import Column, Integer, Boolean, Text, String, ForeignKey, DECIMAL, UniqueConstraint, Enum
 
 from database import Base
 
@@ -41,6 +40,32 @@ class Order(Base):
     pizza_size = Column(ChoiceType(choices=PIZZA_SIZES), default="SMALL")
     user_id = Column(Integer, ForeignKey("user.id"))
     user = relationship("User", back_populates="orders")
+    payments = relationship("DBPayment", back_populates="order")
+
 
     def __repr__(self):
         return f"<Order {self.id}>"
+
+
+class PaymentStatus(PyEnum):
+    PENDING = "PENDING"
+    PAID = "PAID"
+
+    @classmethod
+    def choices(cls):
+        return tuple((i.name, i.value) for i in cls)
+
+
+class DBPayment(Base):
+    __tablename__ = "payments"
+
+    id = Column(Integer, primary_key=True, index=True)
+    status = Column(Enum(PaymentStatus), default=PaymentStatus.PENDING)
+    order_id = Column(Integer, ForeignKey("orders.id"))
+    session_url = Column(String(1023))
+    session_id = Column(String(500))
+    money_to_pay = Column(DECIMAL(precision=8, scale=2))
+
+    order = relationship("Order", back_populates="payments")
+
+

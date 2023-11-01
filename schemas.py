@@ -1,6 +1,8 @@
 from pydantic import BaseModel
 from typing import Optional
 
+from models import PaymentStatus
+
 
 class SignUp(BaseModel):
     id: Optional[int]
@@ -60,5 +62,23 @@ class OrderStatusModel(BaseModel):
         schema_extra = {
             "example": {
                 "order_status": "PENDING",
+            }
+        }
+
+
+class PaymentModel(BaseModel):
+    id: Optional[int]
+    status: Optional[str] = "PENDING"
+    order_id: Optional[int]
+    session_url: Optional[str]
+    session_id: Optional[str]
+    money_to_pay: Optional[float]
+
+    class Config:
+        orm_mode = True
+        schema_extra = {
+            "example": {
+                "status": "PENDING",
+                "order_id": 3,
             }
         }
